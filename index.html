@@ -9,7 +9,7 @@
 <body>
   <div id="body-container">
     <div id="header">
-      <h1>Hello, my name is Hank Hall!<h1>
+      <h1 id="header-greeting">Hello!</h1>
     </div>
     <div id="profile-picture">
       <img src=images/profile-picture1.jpg width=500px height=500px />
@@ -19,7 +19,7 @@
         Welcome to my webpage. <br>
         I am a student in the Geography Department
         <a href="https://www.geo.txstate.edu/" target="_blank"> Geography Department</a> at
-<a href=https://www.txst.edu/" target="_blank"> Texas State University
+<a href=https://www.txst.edu/" target="_blank"> Texas State University</a>
       </p>
     </div>
     <div id="research-interests">
@@ -32,8 +32,19 @@
         </ol>
       </p>
     </div>
-    <div>
-      <script src="javascript/external.js"></script>
-    </div>
+    <h1 id="greeting">Welcome!</h1>
+    <script src="javascript/external.js"></script>
+      <p>My name is Hank Hall.<br></p>
+
+      <div id="copyright">
+        <script>
+          // Get today's date
+          var today = new Date();
+          // Extract the current year
+          var year = today.getFullYear();
+          // Write the copyright line
+          document.writeln("Copyright &copy; " + year);
+        </script>
+      </div>
   </body>
 </html>
