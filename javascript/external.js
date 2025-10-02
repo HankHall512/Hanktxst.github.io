@@ -33,11 +33,21 @@ function welcome()
     message = "<h1>Hello, welcome to my webpage, " + user_name + "!</h1>"
     return message
 }
+var webmaps =
+[
+  ["Truesizeof", "https://www.thetruesize.com/", "Truesizeof lets you compare the size of countries using the mercator projection's distortions."],
+];
 document.write(welcome());
 function webmap_table()
-{   document.write("<table width=100%>");   for (var row=0; row < 2; row++)
-  {     document.write("<tr>");     for (var column=0; column < 3; column++)
-    {       document.write("<td>" + row + "," + column + "</td>");
-    }     document.write("</tr>");
-  }   document.write("</table>");   return "";
+{   document.write("<table width=100%>");
+for (var row=0; row < webmaps.length; row++)
+  {     document.write("<tr>");     for (var column=0;
+column < webmaps[0].length; column++)
+    {       document.write("<td>" + webmaps[row][column] +
+"</td>");
+    }
+document.write("</tr>");
+  }
+document.write("</table>");
+return "";
 }
