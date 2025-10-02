@@ -10,3 +10,6 @@ document.writeln("<br>");
 document.writeln(a += b);
 document.writeln("<br>");
 document.writeln(a += b);
+/*
+window.onload = function() {
+document.write(welcome());
