@@ -9,10 +9,12 @@
 <body>
   <div id="body-container">
     <div id="header">
-      <h1 id="header-greeting">Hello!</h1>
+      <!-- <h1>Hello, my name is Hank Hall!</h1> -->
+      <script src="javascript/external.js"></script>
+      <h1 id="header-greeting"></h1>
     </div>
     <div id="profile-picture">
-      <img src=images/profile-picture1.jpg width=500px height=500px />
+      <img src=images/profile-picture1.jpg width=250px height=250px />
     </div>
     <div id="welcome-text">
       <p>
@@ -32,17 +34,23 @@
         </ol>
       </p>
     </div>
+    <div id="webmap-reviews">
+      <p>
+        <h3>Webmap Reviews</h3>
+        <script>       document.write(webmap_table());
+        </script>
+      </p> 
+    </div>
     <h1 id="greeting">Welcome!</h1>
-    <script src="javascript/external.js"></script>
       <p>My name is Hank Hall.<br></p>
 
       <div id="copyright">
         <script>
-          // Get today's date
+          // Today's date
           var today = new Date();
-          // Extract the current year
+          // Current year
           var year = today.getFullYear();
-          // Write the copyright line
+          // Write in copyright line
           document.writeln("Copyright &copy; " + year);
         </script>
       </div>
