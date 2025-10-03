@@ -1,1 +1,1 @@
-mapbox_access_token = 'webmapping!'
+mapbox_access_token = 'pk.eyJ1IjoicWhvNCIsImEiOiJjbWdhM3Q3bmkwb3E0MnJwejB3c3JrNHFrIn0.ENOEm9yeeDCHYvyqnUAK1A'

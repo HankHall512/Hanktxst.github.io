@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
 window.onload = function() {
   // Prompt the user for their name
@@ -45,7 +44,7 @@ function webmap_table()
 
 for (var row=0; row < webmaps.length; row++)
   {     document.write("<tr><td>");
-    
+
     let title = "<strong>" + webmaps[row][0] + "</strong><br>";
     let link = "<a href='" + webmaps[row][1] + "' target='_blank'>" + webmaps[row][1] + "</a><br>";
     let description = "<p>" + webmaps[row][2] + "</p>";
@@ -58,6 +57,3 @@ for (var row=0; row < webmaps.length; row++)
   document.write("</table>");
   return "";
 }
-=======
-document.write("Where is my JS code?");
->>>>>>> c43f52355d076a29bacfb869d6dcb4daeb21ab64
