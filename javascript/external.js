@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 window.onload = function() {
   // Prompt the user for their name
@@ -57,3 +58,6 @@ for (var row=0; row < webmaps.length; row++)
   document.write("</table>");
   return "";
 }
+=======
+document.write("Where is my JS code?");
+>>>>>>> c43f52355d076a29bacfb869d6dcb4daeb21ab64
