@@ -38,16 +38,22 @@ var webmaps =
   ["Truesizeof", "https://www.thetruesize.com/", "Truesizeof lets you compare the size of countries using the mercator projection's distortions."],
 ];
 document.write(welcome());
+
 function webmap_table()
-{   document.write("<table width=100%>");
+{   document.write("<table width='100%' border='1'>");
+
 for (var row=0; row < webmaps.length; row++)
-  {     document.write("<tr>");     for (var column=0;
-column < webmaps[0].length; column++)
-    {       document.write("<td>" + webmaps[row][column] +
-"</td>");
-    }
-document.write("</tr>");
+  {     document.write("<tr><td>");
+    
+    let title = "<strong>" + webmaps[row][0] + "</strong><br>";
+    let link = "<a href='" + webmaps[row][1] + "' target='_blank'>" + webmaps[row][1] + "</a><br>";
+    let description = "<p>" + webmaps[row][2] + "</p>";
+
+    document.write(title + link + description);
+
+    document.write("</td></tr>");
   }
-document.write("</table>");
-return "";
+
+  document.write("</table>");
+  return "";
 }
