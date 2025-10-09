@@ -50,7 +50,7 @@
         </script>
       </p>
     </div>
-    <h3>Geocoding Map</h3>
+    <h3>The Seven Wonders of the World</h3>
     <br>
     <div id="mapid" style="width: 600px; height: 400px; margin: auto; bottom: 30px;">
       <script>
@@ -59,11 +59,14 @@
       L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {maxZoom: 18, id: 'mapbox/dark-v10', accessToken: mapbox_access_token}).addTo(mymap);
       */
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(mymap);
+
       var geocoder = L.Control.geocoder({
       defaultMarkGeocode: false,
       geocoder: new L.Control.Geocoder.Nominatim()
       }).on('markgeocode', function(e) {
+
       var bbox = e.geocode.bbox;
+
       var poly = L.polygon([
       bbox.getSouthEast(),
       bbox.getNorthEast(),
@@ -100,6 +103,110 @@
   (new ZoomViewer).addTo(mymap);
       */
   mymap.setView([0,0], 1);
+
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-green',
+        iconSize: [10, 10]
+      });
+      L.marker([27.174961, 78.042385], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>Taj Mahal</h3>
+        <p style="font-weight: normal">
+          The Taj Mahal was built within the Mughal empire in the 17th
+          century as a mausoleum for empress Mumtaz Mahal.
+        </p>
+        images/Taj_Mahal.jpg
+        `);
+
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-purple',
+        iconSize: [10, 10]
+      });
+      L.marker([40.334245, 116.477652], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>Great Wall of China</h3>
+        <p style="font-weight: normal">
+          The Great Wall of China is known in China as Wànlǐ Chángchéng,
+          meaning "ten thousand li long wall". It was built by multiple
+          dynasties to defend against the Xiongnu, Mongols, and Khitan.
+          Construction began in the 7th century BC during the Warring States
+          period.
+        </p>
+        images/Great_Wall.jpg
+        `);
+
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-yellow',
+        iconSize: [10, 10]
+      });
+      L.marker([30.328611, 35.441944], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>Petra</h3>
+        <p style="font-weight: normal">
+          Petra is an abandon city built in southern Jordan in the 3rd century
+          BC by the Nabataeans, an Arab nomadic tribe who referred to it as
+          "Raqmu". It is known for its advanced water conduit systems and stone
+          masonry.
+        </p>
+        images/Petra.jpg
+        `);
+
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-blue',
+        iconSize: [10, 10]
+      });
+      L.marker([-22.951389, -43.2108334], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>Christ the Redeemer</h3>
+        <p style="font-weight: normal">
+          Christ the Redeemer is a statue of Jesus Christ built in the city of
+          Rio de Janeiro, Brazil. It was built from the 1850's to the 1930's.
+          It is 98 feet tall (28 meters), and weighs 635 metric tons.
+        </p>
+        images/Christ_Redeemer.jpg
+        `);
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-pink',
+        iconSize: [10, 10]
+      });
+      L.marker([-13.163056, -72.545556], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>Machu Picchu</h3>
+        <p style="font-weight: normal">
+          Machu Picchu was built in the 15th century by the Inca as a citadel.
+          It sits utop a mountain at about 7,970 feet (2,430 meters).
+        </p>
+        images/Machu_Picchu.jpg
+        `);
+
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-red',
+        iconSize: [10, 10]
+      });
+      L.marker([20.682778, -88.569167], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>Chichen Itza</h3>
+        <p style="font-weight: normal">
+          Chichen Itza is an abandoned Mayan city thought to be built in the
+          5th century. It is known for the pyramid temple of "Kukulkan".
+        </p>
+        images/Chichen_Itza.jpg
+        `);
+
+        var customDivIcon = L.divIcon({
+        className: 'custom-marker-orange',
+        iconSize: [10, 10]
+      });
+      L.marker([41.890169, 12.492269], { icon: customDivIcon }).addTo(mymap)
+        .bindPopup(`
+        <h3>The Colesseum</h3>
+        <p style="font-weight: normal">
+          The Colesseum is a large ampitheatre built by the Romans in the 1st
+          century. Modern sports stadiums emulate the architectural design.
+        </p>
+        images/Colosseum.jpg
+        `);
+
       </script>
     </div>
     <h1 id="greeting">Welcome!</h1>

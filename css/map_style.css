@@ -1,5 +1,80 @@
-.leaflet-popup-content-wrapper,
+.leaflet-popup-content-wrapper
+{
+  background-color: #fffbe6 !important; /* Tan background */
+  border-radius: 12px !important; /* Rounded corners */
+  padding: 10px !important;
+}
+
+.leaflet-popup-content {
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .leaflet-popup-tip
 {
   background: yellow;
+}
+/* Dark Orange Marker */
+.custom-marker-green {
+  width: 10px;
+  height: 10px;
+  background-color: #008000;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+/* Purple Marker */
+.custom-marker-purple {
+  width: 10px;
+  height: 10px;
+  background-color: #800080;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+/* Yellow Marker */
+.custom-marker-yellow {
+  width: 10px;
+  height: 10px;
+  background-color: #FFFF00;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+/* Blue Marker */
+.custom-marker-blue {
+  width: 10px;
+  height: 10px;
+  background-color: #0000FF;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+/* Pink Marker */
+.custom-marker-pink {
+  width: 10px;
+  height: 10px;
+  background-color: #FFC0CB;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+/* Red Marker */
+.custom-marker-red {
+  width: 10px;
+  height: 10px;
+  background-color: #FF0000;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+/* Red Marker */
+.custom-marker-orange {
+  width: 10px;
+  height: 10px;
+  background-color: #FFA500;
+  border-radius: 50%;
+  border: 2px solid black;
 }
