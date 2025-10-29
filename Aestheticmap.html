@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>McDonald's & Starbucks in Southern California</title>
+  <title>In-N-Out Burger Locations in San Diego</title>
 
   <!-- Leaflet CSS and JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -22,17 +22,6 @@
       padding: 0;
     }
 
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 1000;
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    }
-
     #footer {
       position: absolute;
       bottom: 0;
@@ -48,25 +37,15 @@
 </head>
 <body>
 
-  <!-- Dropdown controls -->
-  <div id="controls">
-    <label for="storeSelect">Select Store Type:</label>
-    <select id="storeSelect">
-      <option value="mcdonalds">McDonald's</option>
-      <option value="starbucks">Starbucks</option>
-    </select>
-    <button onclick="queryStores()">Find Stores</button>
-  </div>
-
   <!-- Map container -->
   <div id="map"></div>
 
   <!-- Footer -->
-  <div id="footer">© 2025 Southern California Store Map. All rights reserved.</div>
+  <div id="footer">© 2025 In-N-Out Burger San Diego Map. All rights reserved.</div>
 
   <script>
-    // Initialize the map centered on Southern California
-    const map = L.map('map').setView([34.0522, -118.2437], 10); // Los Angeles area
+    // Initialize the map centered on San Diego, CA
+    const map = L.map('map').setView([32.7157, -117.1611], 11);
 
     // Add ESRI basemap
     L.esri.basemapLayer('Streets').addTo(map);
@@ -77,60 +56,41 @@
     // Store reference to last query layer
     let lastQueryLayer = null;
 
-    // Function to query selected store type
-    function queryStores() {
-      const selectedStore = document.getElementById('storeSelect').value;
-
-      // Remove previous query layer
-      if (lastQueryLayer) {
-        map.removeLayer(lastQueryLayer);
-        lastQueryLayer = null;
+    // Create FeatureLayer for In-N-Out Burger data
+    const featureLayer = L.esri.featureLayer({
+      url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/InNOut_Burger_Locations/FeatureServer/0',
+      onEachFeature: function (feature, layer) {
+        const props = feature.properties;
+        const popup = `<strong>${props.name || "In-N-Out Burger"}</strong><br>${props.address || ""}<br>${props.city || ""}, ${props.state || ""}`;
+        layer.bindPopup(popup);
       }
+    });
 
-      // Define service URL and popup logic based on selection
-      let serviceUrl, popupBuilder, whereClause;
-
-      if (selectedStore === 'mcdonalds') {
-        serviceUrl = 'https://services7.arcgis.com/2hYXmwteFLemN5bW/ArcGIS/rest/services/McDonald/FeatureServer/0';
-        popupBuilder = props => `<strong>${props.NAME || "McDonald's"}</strong><br>${props.ADDRESS || ""}`;
-        whereClause = "1=1"; // Show all McDonald's
-      } else {
-        serviceUrl = 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Starbucks_Locations/FeatureServer/0';
-        popupBuilder = props => `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
-        whereClause = "region = 'CA'"; // Starbucks in California
-      }
-
-      // Create FeatureLayer
-      const featureLayer = L.esri.featureLayer({
-        url: serviceUrl,
-        onEachFeature: function (feature, layer) {
-          layer.bindPopup(popupBuilder(feature.properties));
+    // Query for In-N-Out locations near San Diego
+    featureLayer.query()
+      .within(L.latLngBounds(
+        L.latLng(32.5, -117.3), // Southwest corner
+        L.latLng(33.0, -116.8)  // Northeast corner
+      ))
+      .run((error, featureCollection) => {
+        if (error || featureCollection.features.length === 0) {
+          alert('No In-N-Out Burger locations found near San Diego.');
+          return;
         }
-      });
 
-      // Run query
-      featureLayer.query()
-        .where(whereClause)
-        .within(L.latLngBounds(
-          L.latLng(32.5, -119.0), // Southwest corner
-          L.latLng(34.5, -117.0)  // Northeast corner
-        ))
-        .run((error, featureCollection) => {
-          if (error || featureCollection.features.length === 0) {
-            alert('No store locations found.');
-            return;
+        // Add results to map
+        lastQueryLayer = L.geoJSON(featureCollection, {
+          onEachFeature: function (feature, layer) {
+            const props = feature.properties;
+            const popup = `<strong>${props.name || "In-N-Out Burger"}</strong><br>${props.address || ""}<br>${props.city || ""}, ${props.state || ""}`;
+            layer.bindPopup(popup);
           }
+        }).addTo(map);
 
-          lastQueryLayer = L.geoJSON(featureCollection, {
-            onEachFeature: function (feature, layer) {
-              layer.bindPopup(popupBuilder(feature.properties));
-            }
-          }).addTo(map);
-
-          const coords = featureCollection.features[0].geometry.coordinates.reverse();
-          map.flyTo(coords, 13);
-        });
-    }
+        // Zoom to first result
+        const coords = featureCollection.features[0].geometry.coordinates.reverse();
+        map.flyTo(coords, 13);
+      });
   </script>
 </body>
 </html>
