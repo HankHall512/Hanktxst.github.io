@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>In-N-Out Burger Locations in San Diego</title>
+  <title>KFC Locations in San Diego</title>
 
   <!-- Leaflet CSS and JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -41,7 +41,7 @@
   <div id="map"></div>
 
   <!-- Footer -->
-  <div id="footer">© 2025 In-N-Out Burger San Diego Map. All rights reserved.</div>
+  <div id="footer">© 2025 KFC San Diego Map. All rights reserved.</div>
 
   <script>
     // Initialize the map centered on San Diego, CA
@@ -56,17 +56,17 @@
     // Store reference to last query layer
     let lastQueryLayer = null;
 
-    // Create FeatureLayer for In-N-Out Burger data
+    // Create FeatureLayer for KFC data
     const featureLayer = L.esri.featureLayer({
-      url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/InNOut_Burger_Locations/FeatureServer/0',
+      url: 'https://services.arcgis.com/AgwDJMQH12AGieWa/arcgis/rest/services/KFC_Locations/FeatureServer/0',
       onEachFeature: function (feature, layer) {
         const props = feature.properties;
-        const popup = `<strong>${props.name || "In-N-Out Burger"}</strong><br>${props.address || ""}<br>${props.city || ""}, ${props.state || ""}`;
+        const popup = `<strong>${props.CONAME || "KFC"}</strong><br>${props.STREET || ""}, ${props.CITY || ""}, ${props.STATE || ""}`;
         layer.bindPopup(popup);
       }
     });
 
-    // Query for In-N-Out locations near San Diego
+    // Query for KFC locations near San Diego
     featureLayer.query()
       .within(L.latLngBounds(
         L.latLng(32.5, -117.3), // Southwest corner
@@ -74,7 +74,7 @@
       ))
       .run((error, featureCollection) => {
         if (error || featureCollection.features.length === 0) {
-          alert('No In-N-Out Burger locations found near San Diego.');
+          alert('No KFC locations found near San Diego.');
           return;
         }
 
@@ -82,7 +82,7 @@
         lastQueryLayer = L.geoJSON(featureCollection, {
           onEachFeature: function (feature, layer) {
             const props = feature.properties;
-            const popup = `<strong>${props.name || "In-N-Out Burger"}</strong><br>${props.address || ""}<br>${props.city || ""}, ${props.state || ""}`;
+            const popup = `<strong>${props.CONAME || "KFC"}</strong><br>${props.STREET || ""}, ${props.CITY || ""}, ${props.STATE || ""}`;
             layer.bindPopup(popup);
           }
         }).addTo(map);
