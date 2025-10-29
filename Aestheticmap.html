@@ -65,41 +65,52 @@
   <div id="footer">© 2025 City Services Map. All rights reserved.</div>
 
   <script>
-    // Initialize the map centered on Austin, TX
-    const map = L.map('map').setView([30.2672, -97.7431], 13);
+  // Initialize the map centered on Austin, TX
+  const map = L.map('map').setView([30.2672, -97.7431], 13);
 
-    // Add ESRI basemap (Streets)
-    L.esri.basemapLayer('Streets').addTo(map);
+  // Add ESRI basemap (Streets)
+  L.esri.basemapLayer('Streets').addTo(map);
 
-    // Add a widget (Geocoder control)
-    L.Control.geocoder().addTo(map);
+  // Add visible data layer (MapImageLayer)
+  const safetyLayer = L.esri.dynamicMapLayer({
+    url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer',
+    layers: [0, 1], // Show both Fire and Police stations
+    opacity: 0.7
+  }).addTo(map);
 
-    // Add visible data layer (public safety)
-    const safetyLayer = L.esri.dynamicMapLayer({
-      url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer',
-      layers: [0, 1], // Fire and Police
-      opacity: 0.7
-    }).addTo(map);
+  // Add a widget (Geocoder control)
+  L.Control.geocoder().addTo(map);
 
-    // Function to query and zoom to a service type
-    function queryService() {
-      const selected = document.getElementById('serviceType').value;
+  // Function to query and zoom to selected service type
+  function queryService() {
+    const selected = document.getElementById('serviceType').value;
 
-      const featureLayer = L.esri.featureLayer({
-        url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/0'
+    // Determine which layer to query based on selection
+    const layerIndex = selected === 'Fire Station' ? 0 : 1;
+
+    // Create a FeatureLayer for the selected service type
+    const featureLayer = L.esri.featureLayer({
+      url: `https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/${layerIndex}`
+    });
+
+    // Run the query
+    featureLayer.query()
+      .where(`NAME LIKE '%${selected}%'`)
+      .run((error, featureCollection) => {
+        if (error) {
+          console.error('Query error:', error);
+          alert('An error occurred while querying the data.');
+          return;
+        }
+
+        if (featureCollection.features.length > 0) {
+          const coords = featureCollection.features[0].geometry.coordinates.reverse();
+          map.flyTo(coords, 16); // Animate to the result
+        } else {
+          alert('No results found.');
+        }
       });
-
-      featureLayer.query()
-        .where(`NAME LIKE '%${selected}%'`)
-        .run((error, featureCollection) => {
-          if (featureCollection.features.length > 0) {
-            const coords = featureCollection.features[0].geometry.coordinates.reverse();
-            map.flyTo(coords, 16); // Animate to location
-          } else {
-            alert('No results found.');
-          }
-        });
-    }
-  </script>
+  }
+</script>
 </body>
 </html>
