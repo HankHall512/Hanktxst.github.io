@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Starbucks Locations in Texas</title>
+  <title>Starbucks Locations in Austin, TX</title>
 
   <!-- Leaflet CSS and JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -22,17 +22,6 @@
       padding: 0;
     }
 
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 1000;
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    }
-
     #footer {
       position: absolute;
       bottom: 0;
@@ -48,27 +37,15 @@
 </head>
 <body>
 
-  <!-- Dropdown controls -->
-  <div id="controls">
-    <label for="citySelect">Select a Texas City:</label>
-    <select id="citySelect">
-      <option value="San Marcos">San Marcos</option>
-      <option value="Austin">Austin</option>
-      <option value="Houston">Houston</option>
-      <option value="Dallas">Dallas</option>
-    </select>
-    <button onclick="queryStarbucks()">Find Starbucks</button>
-  </div>
-
   <!-- Map container -->
   <div id="map"></div>
 
   <!-- Footer -->
-  <div id="footer">© 2025 Starbucks Texas Map. All rights reserved.</div>
+  <div id="footer">© 2025 Starbucks Austin Map. All rights reserved.</div>
 
   <script>
-    // Initialize the map centered on Texas
-    const map = L.map('map').setView([31.0, -99.0], 6); // Central Texas
+    // Initialize the map centered on Austin, TX
+    const map = L.map('map').setView([30.2672, -97.7431], 12);
 
     // Add ESRI basemap
     L.esri.basemapLayer('Streets').addTo(map);
@@ -76,56 +53,27 @@
     // Add a widget (Geocoder control)
     L.Control.geocoder().addTo(map);
 
-    // Store reference to last query layer
-    let lastQueryLayer = null;
+    // Create FeatureLayer for Starbucks data
+    const featureLayer = L.esri.featureLayer({
+      url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Starbucks_Locations/FeatureServer/0',
+      onEachFeature: function (feature, layer) {
+        const props = feature.properties;
+        const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
+        layer.bindPopup(popup);
+      }
+    });
 
-    // Function to query Starbucks locations in selected Texas city
-    function queryStarbucks() {
-  const selectedCity = document.getElementById('citySelect').value;
+    // Query for Starbucks in Austin, TX
+    featureLayer.query()
+      .where("region = 'TX' AND city = 'Austin'")
+      .run((error, featureCollection) => {
+        if (error || featureCollection.features.length === 0) {
+          alert('No Starbucks locations found in Austin.');
+          return;
+        }
 
-  if (lastQueryLayer) {
-    map.removeLayer(lastQueryLayer);
-    lastQueryLayer = null;
-  }
-
-  const featureLayer = L.esri.featureLayer({
-    url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Starbucks_Locations/FeatureServer/0',
-    onEachFeature: function (feature, layer) {
-      const props = feature.properties;
-      const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
-      layer.bindPopup(popup);
-    }
-  });
-
-  // First try city + region filter
-  featureLayer.query()
-    .where(`region = 'TX' AND city = '${selectedCity}'`)
-    .run((error, featureCollection) => {
-      if (error || featureCollection.features.length === 0) {
-        console.warn('City query failed or returned no results. Falling back to all Texas locations.');
-
-        // Fallback: show all Starbucks in Texas
-        featureLayer.query()
-          .where("region = 'TX'")
-          .run((fallbackError, fallbackCollection) => {
-            if (fallbackError || fallbackCollection.features.length === 0) {
-              alert('No Starbucks locations found in Texas.');
-              return;
-            }
-
-            lastQueryLayer = L.geoJSON(fallbackCollection, {
-              onEachFeature: function (feature, layer) {
-                const props = feature.properties;
-                const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
-                layer.bindPopup(popup);
-              }
-            }).addTo(map);
-
-            const coords = fallbackCollection.features[0].geometry.coordinates.reverse();
-            map.flyTo(coords, 7);
-          });
-      } else {
-        lastQueryLayer = L.geoJSON(featureCollection, {
+        // Add results to map
+        const resultLayer = L.geoJSON(featureCollection, {
           onEachFeature: function (feature, layer) {
             const props = feature.properties;
             const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
@@ -133,11 +81,10 @@
           }
         }).addTo(map);
 
+        // Zoom to first result
         const coords = featureCollection.features[0].geometry.coordinates.reverse();
         map.flyTo(coords, 14);
-      }
-    });
-}
+      });
   </script>
 </body>
 </html>
