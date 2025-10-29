@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Starbucks Locations in Austin, TX</title>
+  <title>McDonald's Locations in Southern California</title>
 
   <!-- Leaflet CSS and JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -41,11 +41,11 @@
   <div id="map"></div>
 
   <!-- Footer -->
-  <div id="footer">© 2025 Starbucks Austin Map. All rights reserved.</div>
+  <div id="footer">© 2025 McDonald's Southern California Map. All rights reserved.</div>
 
   <script>
-    // Initialize the map centered on Austin, TX
-    const map = L.map('map').setView([30.2672, -97.7431], 12);
+    // Initialize the map centered on Southern California
+    const map = L.map('map').setView([34.0522, -118.2437], 10); // Los Angeles area
 
     // Add ESRI basemap
     L.esri.basemapLayer('Streets').addTo(map);
@@ -53,22 +53,25 @@
     // Add a widget (Geocoder control)
     L.Control.geocoder().addTo(map);
 
-    // Create FeatureLayer for Starbucks data
+    // Create FeatureLayer for McDonald's data
     const featureLayer = L.esri.featureLayer({
-      url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Starbucks_Locations/FeatureServer/0',
+      url: 'https://services7.arcgis.com/2hYXmwteFLemN5bW/ArcGIS/rest/services/McDonald/FeatureServer/0',
       onEachFeature: function (feature, layer) {
         const props = feature.properties;
-        const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
+        const popup = `<strong>${props.NAME || "McDonald's"}</strong><br>${props.ADDRESS || ""}`;
         layer.bindPopup(popup);
       }
     });
 
-    // Query for Starbucks in Austin, TX
+    // Query for McDonald's locations near Southern California
     featureLayer.query()
-      .where("region = 'TX' AND city = 'Austin'")
+      .within(L.latLngBounds(
+        L.latLng(32.5, -119.0), // Southwest corner
+        L.latLng(34.5, -117.0)  // Northeast corner
+      ))
       .run((error, featureCollection) => {
         if (error || featureCollection.features.length === 0) {
-          alert('No Starbucks locations found in Austin.');
+          alert('No McDonald\'s locations found in Southern California.');
           return;
         }
 
@@ -76,14 +79,14 @@
         const resultLayer = L.geoJSON(featureCollection, {
           onEachFeature: function (feature, layer) {
             const props = feature.properties;
-            const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
+            const popup = `<strong>${props.NAME || "McDonald's"}</strong><br>${props.ADDRESS || ""}`;
             layer.bindPopup(popup);
           }
         }).addTo(map);
 
         // Zoom to first result
         const coords = featureCollection.features[0].geometry.coordinates.reverse();
-        map.flyTo(coords, 14);
+        map.flyTo(coords, 13);
       });
   </script>
 </body>
