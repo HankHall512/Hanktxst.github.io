@@ -81,36 +81,39 @@
 
     // Function to query Starbucks locations in selected Texas city
     function queryStarbucks() {
-      const selectedCity = document.getElementById('citySelect').value;
+  const selectedCity = document.getElementById('citySelect').value;
 
-      // Remove previous query layer
-      if (lastQueryLayer) {
-        map.removeLayer(lastQueryLayer);
-        lastQueryLayer = null;
-      }
+  if (lastQueryLayer) {
+    map.removeLayer(lastQueryLayer);
+    lastQueryLayer = null;
+  }
 
-      // Create FeatureLayer for Starbucks data
-      const featureLayer = L.esri.featureLayer({
-        url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Starbucks_Locations/FeatureServer/0',
-        onEachFeature: function (feature, layer) {
-          const props = feature.properties;
-          const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
-          layer.bindPopup(popup);
-        }
-      });
+  const featureLayer = L.esri.featureLayer({
+    url: 'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Starbucks_Locations/FeatureServer/0',
+    onEachFeature: function (feature, layer) {
+      const props = feature.properties;
+      const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
+      layer.bindPopup(popup);
+    }
+  });
 
-      // Run query for Starbucks in selected city and region = TX
-      featureLayer.query()
-        .where(`region = 'TX' AND city = '${selectedCity}'`)
-        .run((error, featureCollection) => {
-          if (error) {
-            console.error('Query error:', error);
-            alert('An error occurred while querying Starbucks locations.');
-            return;
-          }
+  // First try city + region filter
+  featureLayer.query()
+    .where(`region = 'TX' AND city = '${selectedCity}'`)
+    .run((error, featureCollection) => {
+      if (error || featureCollection.features.length === 0) {
+        console.warn('City query failed or returned no results. Falling back to all Texas locations.');
 
-          if (featureCollection.features.length > 0) {
-            lastQueryLayer = L.geoJSON(featureCollection, {
+        // Fallback: show all Starbucks in Texas
+        featureLayer.query()
+          .where("region = 'TX'")
+          .run((fallbackError, fallbackCollection) => {
+            if (fallbackError || fallbackCollection.features.length === 0) {
+              alert('No Starbucks locations found in Texas.');
+              return;
+            }
+
+            lastQueryLayer = L.geoJSON(fallbackCollection, {
               onEachFeature: function (feature, layer) {
                 const props = feature.properties;
                 const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
@@ -118,13 +121,23 @@
               }
             }).addTo(map);
 
-            const coords = featureCollection.features[0].geometry.coordinates.reverse();
-            map.flyTo(coords, 14);
-          } else {
-            alert('No Starbucks locations found in that city.');
+            const coords = fallbackCollection.features[0].geometry.coordinates.reverse();
+            map.flyTo(coords, 7);
+          });
+      } else {
+        lastQueryLayer = L.geoJSON(featureCollection, {
+          onEachFeature: function (feature, layer) {
+            const props = feature.properties;
+            const popup = `<strong>${props.location_name}</strong><br>${props.street_address}<br>${props.city}, ${props.region}`;
+            layer.bindPopup(popup);
           }
-        });
-    }
+        }).addTo(map);
+
+        const coords = featureCollection.features[0].geometry.coordinates.reverse();
+        map.flyTo(coords, 14);
+      }
+    });
+}
   </script>
 </body>
 </html>
