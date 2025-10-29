@@ -64,7 +64,7 @@
   <!-- Footer -->
   <div id="footer">© 2025 City Services Map. All rights reserved.</div>
 
-  <script>
+<script>
   // Initialize the map centered on Austin, TX
   const map = L.map('map').setView([30.2672, -97.7431], 13);
 
@@ -81,6 +81,9 @@
   // Add a widget (Geocoder control)
   L.Control.geocoder().addTo(map);
 
+  // Store reference to last query layer so we can remove it
+  let lastQueryLayer = null;
+
   // Function to query and zoom to selected service type
   function queryService() {
     const selected = document.getElementById('serviceType').value;
@@ -88,9 +91,18 @@
     // Determine which layer to query based on selection
     const layerIndex = selected === 'Fire Station' ? 0 : 1;
 
-    // Create a FeatureLayer for the selected service type
+    // Remove previous query layer if it exists
+    if (lastQueryLayer) {
+      map.removeLayer(lastQueryLayer);
+      lastQueryLayer = null;
+    }
+
+    // Create a new FeatureLayer for the selected service type
     const featureLayer = L.esri.featureLayer({
-      url: `https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/${layerIndex}`
+      url: `https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/${layerIndex}`,
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(feature.properties.NAME || "No name");
+      }
     });
 
     // Run the query
@@ -104,8 +116,16 @@
         }
 
         if (featureCollection.features.length > 0) {
+          // Add the results to the map
+          lastQueryLayer = L.geoJSON(featureCollection, {
+            onEachFeature: function (feature, layer) {
+              layer.bindPopup(feature.properties.NAME || "No name");
+            }
+          }).addTo(map);
+
+          // Zoom to the first feature
           const coords = featureCollection.features[0].geometry.coordinates.reverse();
-          map.flyTo(coords, 16); // Animate to the result
+          map.flyTo(coords, 16);
         } else {
           alert('No results found.');
         }
