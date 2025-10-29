@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>City Services Web Map</title>
+  <title>San Marcos City Services Map</title>
 
   <!-- Leaflet CSS and JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -62,75 +62,75 @@
   <div id="map"></div>
 
   <!-- Footer -->
-  <div id="footer">© 2025 City Services Map. All rights reserved.</div>
+  <div id="footer">© 2025 San Marcos City Services Map. All rights reserved.</div>
 
-<script>
-  // Initialize the map centered on Austin, TX
-  const map = L.map('map').setView([30.2672, -97.7431], 13);
+  <script>
+    // Initialize the map centered on San Marcos, TX
+    const map = L.map('map').setView([29.8833, -97.9414], 13); // San Marcos coordinates
 
-  // Add ESRI basemap (Streets)
-  L.esri.basemapLayer('Streets').addTo(map);
+    // Add ESRI basemap (Streets)
+    L.esri.basemapLayer('Streets').addTo(map);
 
-  // Add visible data layer (MapImageLayer)
-  const safetyLayer = L.esri.dynamicMapLayer({
-    url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer',
-    layers: [0, 1], // Show both Fire and Police stations
-    opacity: 0.7
-  }).addTo(map);
+    // Add visible data layer (MapImageLayer)
+    const safetyLayer = L.esri.dynamicMapLayer({
+      url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer',
+      layers: [0, 1], // Show both Fire and Police stations
+      opacity: 0.7
+    }).addTo(map);
 
-  // Add a widget (Geocoder control)
-  L.Control.geocoder().addTo(map);
+    // Add a widget (Geocoder control)
+    L.Control.geocoder().addTo(map);
 
-  // Store reference to last query layer so we can remove it
-  let lastQueryLayer = null;
+    // Store reference to last query layer so we can remove it
+    let lastQueryLayer = null;
 
-  // Function to query and zoom to selected service type
-  function queryService() {
-    const selected = document.getElementById('serviceType').value;
+    // Function to query and zoom to selected service type
+    function queryService() {
+      const selected = document.getElementById('serviceType').value;
 
-    // Determine which layer to query based on selection
-    const layerIndex = selected === 'Fire Station' ? 0 : 1;
+      // Determine which layer to query based on selection
+      const layerIndex = selected === 'Fire Station' ? 0 : 1;
 
-    // Remove previous query layer if it exists
-    if (lastQueryLayer) {
-      map.removeLayer(lastQueryLayer);
-      lastQueryLayer = null;
-    }
-
-    // Create a new FeatureLayer for the selected service type
-    const featureLayer = L.esri.featureLayer({
-      url: `https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/${layerIndex}`,
-      onEachFeature: function (feature, layer) {
-        layer.bindPopup(feature.properties.NAME || "No name");
+      // Remove previous query layer if it exists
+      if (lastQueryLayer) {
+        map.removeLayer(lastQueryLayer);
+        lastQueryLayer = null;
       }
-    });
 
-    // Run the query
-    featureLayer.query()
-      .where(`NAME LIKE '%${selected}%'`)
-      .run((error, featureCollection) => {
-        if (error) {
-          console.error('Query error:', error);
-          alert('An error occurred while querying the data.');
-          return;
-        }
-
-        if (featureCollection.features.length > 0) {
-          // Add the results to the map
-          lastQueryLayer = L.geoJSON(featureCollection, {
-            onEachFeature: function (feature, layer) {
-              layer.bindPopup(feature.properties.NAME || "No name");
-            }
-          }).addTo(map);
-
-          // Zoom to the first feature
-          const coords = featureCollection.features[0].geometry.coordinates.reverse();
-          map.flyTo(coords, 16);
-        } else {
-          alert('No results found.');
+      // Create a new FeatureLayer for the selected service type
+      const featureLayer = L.esri.featureLayer({
+        url: `https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/${layerIndex}`,
+        onEachFeature: function (feature, layer) {
+          layer.bindPopup(feature.properties.NAME || "No name");
         }
       });
-  }
-</script>
+
+      // Run the query
+      featureLayer.query()
+        .where(`NAME LIKE '%${selected}%'`)
+        .run((error, featureCollection) => {
+          if (error) {
+            console.error('Query error:', error);
+            alert('An error occurred while querying the data.');
+            return;
+          }
+
+          if (featureCollection.features.length > 0) {
+            // Add the results to the map
+            lastQueryLayer = L.geoJSON(featureCollection, {
+              onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.NAME || "No name");
+              }
+            }).addTo(map);
+
+            // Zoom to the first feature
+            const coords = featureCollection.features[0].geometry.coordinates.reverse();
+            map.flyTo(coords, 16);
+          } else {
+            alert('No results found.');
+          }
+        });
+    }
+  </script>
 </body>
 </html>
