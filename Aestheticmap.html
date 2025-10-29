@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>City Services Web Map</title>
+  <!-- Load ArcGIS JS API -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.28/"></script>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+    #footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      font-size: 12px;
+      padding: 5px;
+    }
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 99;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dropdown controls for querying -->
+  <div id="controls">
+    <label for="serviceType">Select Service Type:</label>
+    <select id="serviceType">
+      <option value="Fire Station">Fire Station</option>
+      <option value="Police Station">Police Station</option>
+    </select>
+    <button id="queryBtn">Find</button>
+  </div>
+
+  <!-- Map container -->
+  <div id="viewDiv"></div>
+
+  <!-- Footer with copyright -->
+  <div id="footer">© 2025 City Services Map. All rights reserved.</div>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/MapImageLayer",
+      "esri/layers/TileLayer",
+      "esri/widgets/Legend",
+      "esri/widgets/ScaleBar",
+      "esri/tasks/support/Query",
+      "esri/layers/FeatureLayer"
+    ], function(Map, MapView, MapImageLayer, TileLayer, Legend, ScaleBar, Query, FeatureLayer) {
+
+      // Create a basemap with a TileLayer
+      const tileLayer = new TileLayer({
+        url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"
+      });
+
+      // Create a MapImageLayer with city services
+      const servicesLayer = new MapImageLayer({
+        url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer",
+        sublayers: [{ id: 0, visible: true }, { id: 1, visible: true }]
+      });
+
+      // Create the map and add layers
+      const map = new Map({
+        layers: [tileLayer, servicesLayer]
+      });
+
+      // Create the view and set initial center and scale
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-97.7431, 30.2672], // Austin, TX
+        scale: 50000
+      });
+
+      // Add a widget (Legend)
+      const legend = new Legend({ view: view });
+      view.ui.add(legend, "top-right");
+
+      // Add a scale bar widget
+      const scaleBar = new ScaleBar({ view: view });
+      view.ui.add(scaleBar, "bottom-left");
+
+      // Query logic triggered by dropdown
+      document.getElementById("queryBtn").addEventListener("click", function() {
+        const selected = document.getElementById("serviceType").value;
+        const query = new Query();
+        query.where = `NAME LIKE '%${selected}%'`;
+        query.outFields = ["*"];
+        query.returnGeometry = true;
+
+        const featureLayer = new FeatureLayer({
+          url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/PublicSafety/PublicSafetyBasemap/MapServer/0"
+        });
+
+        featureLayer.queryFeatures(query).then(function(result) {
+          if (result.features.length > 0) {
+            const feature = result.features[0];
+            view.goTo({
+              target: feature.geometry,
+              zoom: 15
+            });
+          } else {
+            alert("No results found.");
+          }
+        });
+      });
+
+    });
+  </script>
+</body>
+</html>
